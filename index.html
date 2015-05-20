@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Course Project for Practical Machine Learning by onnatio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Course Project for Practical Machine Learning</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/onnatio/Course-Project" class="btn">View on GitHub</a>
+      <a href="https://github.com/onnatio/Course-Project/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/onnatio/Course-Project/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><strong>Course Project for Practical Machine Learning</strong></p>
+
+<p>Rmd-FILE:</p>
+
+<hr>
+
+<p>title: "Course Project for Practical Machine Learning"</p>
+
+<h2>
+<a id="output-html_document" class="anchor" href="#output-html_document" aria-hidden="true"><span class="octicon octicon-link"></span></a>output: html_document</h2>
+
+<p>First, I load the caret package and the data file named "pml-training":</p>
+
+<div class="highlight highlight-r"><pre>library(<span class="pl-smi">caret</span>)
+<span class="pl-smi">training</span><span class="pl-k">&lt;-</span>read.csv(<span class="pl-s"><span class="pl-pds">"</span>C:/Users/Antonio/Documents/R/pml-training.csv<span class="pl-pds">"</span></span>,<span class="pl-v">header</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)</pre></div>
+
+<p>I split the data set into training and testing subsets, named "train" and "test", respectively.</p>
+
+<div class="highlight highlight-r"><pre>set.seed(<span class="pl-c1">8090</span>)
+<span class="pl-smi">inTrain</span><span class="pl-k">&lt;-</span>createDataPartition(<span class="pl-v">y</span><span class="pl-k">=</span><span class="pl-smi">training</span><span class="pl-k">$</span><span class="pl-smi">classe</span>,<span class="pl-v">p</span><span class="pl-k">=</span><span class="pl-c1">0.75</span>,<span class="pl-v">list</span><span class="pl-k">=</span><span class="pl-c1">FALSE</span>)
+<span class="pl-smi">train</span><span class="pl-k">&lt;-</span><span class="pl-smi">training</span>[<span class="pl-smi">inTrain</span>,]
+<span class="pl-smi">test</span><span class="pl-k">&lt;-</span><span class="pl-smi">training</span>[<span class="pl-k">-</span><span class="pl-smi">inTrain</span>,]
+dim(<span class="pl-smi">training</span>)
+dim(<span class="pl-smi">train</span>)
+dim(<span class="pl-smi">test</span>)</pre></div>
+
+<p>In order to predict the variable "Classe", I use the Random Forest algorithm in the package "caret".I do not include in the algorithm variables with too many NA's or variables which do not give valuable information (like usernames, etc.).</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-v">mod_rf</span> <span class="pl-k">=</span> train(<span class="pl-smi">classe</span><span class="pl-k">~</span><span class="pl-smi">raw_timestamp_part_1</span><span class="pl-k">+</span><span class="pl-smi">raw_timestamp_part_2</span>
+              <span class="pl-k">+</span><span class="pl-smi">new_window</span><span class="pl-k">+</span><span class="pl-smi">num_window</span><span class="pl-k">+</span><span class="pl-smi">roll_belt</span><span class="pl-k">+</span><span class="pl-smi">pitch_belt</span>
+              <span class="pl-k">+</span><span class="pl-smi">yaw_belt</span><span class="pl-k">+</span><span class="pl-smi">total_accel_belt</span><span class="pl-k">+</span><span class="pl-smi">gyros_belt_x</span><span class="pl-k">+</span><span class="pl-smi">gyros_belt_y</span>
+              <span class="pl-k">+</span><span class="pl-smi">gyros_belt_z</span><span class="pl-k">+</span><span class="pl-smi">accel_belt_x</span><span class="pl-k">+</span><span class="pl-smi">accel_belt_y</span><span class="pl-k">+</span><span class="pl-smi">accel_belt_z</span>
+              <span class="pl-k">+</span><span class="pl-smi">magnet_belt_x</span><span class="pl-k">+</span><span class="pl-smi">magnet_belt_y</span><span class="pl-k">+</span><span class="pl-smi">magnet_belt_z</span><span class="pl-k">+</span><span class="pl-smi">roll_arm</span>
+              <span class="pl-k">+</span><span class="pl-smi">pitch_arm</span><span class="pl-k">+</span><span class="pl-smi">yaw_arm</span><span class="pl-k">+</span><span class="pl-smi">total_accel_arm</span><span class="pl-k">+</span><span class="pl-smi">gyros_arm_x</span>
+              <span class="pl-k">+</span><span class="pl-smi">gyros_arm_y</span><span class="pl-k">+</span><span class="pl-smi">gyros_arm_z</span><span class="pl-k">+</span><span class="pl-smi">accel_arm_x</span><span class="pl-k">+</span><span class="pl-smi">accel_arm_y</span><span class="pl-k">+</span><span class="pl-smi">accel_arm_z</span>
+              <span class="pl-k">+</span><span class="pl-smi">magnet_arm_x</span><span class="pl-k">+</span><span class="pl-smi">magnet_arm_y</span><span class="pl-k">+</span><span class="pl-smi">magnet_arm_z</span><span class="pl-k">+</span><span class="pl-smi">roll_dumbbell</span><span class="pl-k">+</span><span class="pl-smi">pitch_dumbbell</span>
+              <span class="pl-k">+</span><span class="pl-smi">yaw_dumbbell</span>, <span class="pl-v">method</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>rf<span class="pl-pds">"</span></span>, <span class="pl-v">data</span> <span class="pl-k">=</span> <span class="pl-smi">train</span>) </pre></div>
+
+<p>The results are shown here; we see that the estimate of the error rate is very low (0,1%); I also show the importance of the variables:</p>
+
+<div class="highlight highlight-r"><pre>print(<span class="pl-smi">mod_rf</span><span class="pl-k">$</span><span class="pl-smi">finalModel</span>)
+<span class="pl-smi">varImport</span><span class="pl-k">&lt;-</span>varImp(<span class="pl-smi">mod_rf</span>)
+<span class="pl-smi">varImport</span></pre></div>
+
+<p>Next, I use the test subset to validate the model. I build the Confusion Matrix and we can see that the accuracy is very high, 0,998.</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-smi">preds</span><span class="pl-k">&lt;-</span>predict(<span class="pl-smi">mod_rf</span>,<span class="pl-v">newdata</span><span class="pl-k">=</span><span class="pl-smi">test</span>)
+confusionMatrix(<span class="pl-smi">preds</span>,<span class="pl-smi">test</span><span class="pl-k">$</span><span class="pl-smi">classe</span>)</pre></div>
+
+<p>Finally, I use the model to predict the values of the variable "Classe" of a new set of data named "pml-testing". The 20 predictions are shown below:</p>
+
+<div class="highlight highlight-r"><pre><span class="pl-smi">testing</span><span class="pl-k">&lt;-</span>read.csv(<span class="pl-s"><span class="pl-pds">"</span>C:/Users/Antonio/Documents/R/pml-testing.csv<span class="pl-pds">"</span></span>,<span class="pl-v">header</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)
+<span class="pl-smi">testing_preds</span><span class="pl-k">&lt;-</span>predict(<span class="pl-smi">mod_rf</span>,<span class="pl-v">newdata</span><span class="pl-k">=</span><span class="pl-smi">testing</span>)
+<span class="pl-smi">testing_preds</span></pre></div>
+
+<p>COMPILED HTML FILE:</p>
+
+<p>First, I load the caret package and the data file named “pml-training”:</p>
+
+<p>library(caret)</p>
+
+<h2>
+<a id="loading-required-package-lattice" class="anchor" href="#loading-required-package-lattice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading required package: lattice</h2>
+
+<h2>
+<a id="loading-required-package-ggplot2" class="anchor" href="#loading-required-package-ggplot2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading required package: ggplot2</h2>
+
+<p>training&lt;-read.csv("C:/Users/Antonio/Documents/R/pml-training.csv",header=TRUE)</p>
+
+<p>I split the data set into training and testing subsets, named “train” and “test”, respectively.</p>
+
+<p>set.seed(8090)
+inTrain&lt;-createDataPartition(y=training$classe,p=0.75,list=FALSE)
+train&lt;-training[inTrain,]
+test&lt;-training[-inTrain,]
+dim(training)</p>
+
+<h2>
+<a id="1-19622---160" class="anchor" href="#1-19622---160" aria-hidden="true"><span class="octicon octicon-link"></span></a>[1] 19622   160</h2>
+
+<p>dim(train)</p>
+
+<h2>
+<a id="1-14718---160" class="anchor" href="#1-14718---160" aria-hidden="true"><span class="octicon octicon-link"></span></a>[1] 14718   160</h2>
+
+<p>dim(test)</p>
+
+<h2>
+<a id="1-4904--160" class="anchor" href="#1-4904--160" aria-hidden="true"><span class="octicon octicon-link"></span></a>[1] 4904  160</h2>
+
+<p>In order to predict the variable “Classe”, I use the Random Forest algorithm in the package “caret”.I do not include in the algorithm variables with too many NA’s or variables which do not give valuable information (like usernames, etc.).</p>
+
+<p>mod_rf = train(classe~raw_timestamp_part_1+raw_timestamp_part_2
+              +new_window+num_window+roll_belt+pitch_belt
+              +yaw_belt+total_accel_belt+gyros_belt_x+gyros_belt_y
+              +gyros_belt_z+accel_belt_x+accel_belt_y+accel_belt_z
+              +magnet_belt_x+magnet_belt_y+magnet_belt_z+roll_arm
+              +pitch_arm+yaw_arm+total_accel_arm+gyros_arm_x
+              +gyros_arm_y+gyros_arm_z+accel_arm_x+accel_arm_y+accel_arm_z
+              +magnet_arm_x+magnet_arm_y+magnet_arm_z+roll_dumbbell+pitch_dumbbell
+              +yaw_dumbbell, method = "rf", data = train) </p>
+
+<h2>
+<a id="loading-required-package-randomforest" class="anchor" href="#loading-required-package-randomforest" aria-hidden="true"><span class="octicon octicon-link"></span></a>Loading required package: randomForest</h2>
+
+<h2>
+<a id="randomforest-46-10" class="anchor" href="#randomforest-46-10" aria-hidden="true"><span class="octicon octicon-link"></span></a>randomForest 4.6-10</h2>
+
+<h2>
+<a id="type-rfnews-to-see-new-featureschangesbug-fixes" class="anchor" href="#type-rfnews-to-see-new-featureschangesbug-fixes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Type rfNews() to see new features/changes/bug fixes.</h2>
+
+<p>The results are shown here; we see that the estimate of the error rate is very low (0,1%); I also show the importance of the variables:</p>
+
+<p>print(mod_rf$finalModel)</p>
+
+<h2>
+<a id="call" class="anchor" href="#call" aria-hidden="true"><span class="octicon octicon-link"></span></a>Call:</h2>
+
+<h2>
+<a id="randomforestx--x-y--y-mtry--parammtry" class="anchor" href="#randomforestx--x-y--y-mtry--parammtry" aria-hidden="true"><span class="octicon octicon-link"></span></a>randomForest(x = x, y = y, mtry = param$mtry)</h2>
+
+<h2>
+<a id="type-of-random-forest-classification" class="anchor" href="#type-of-random-forest-classification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Type of random forest: classification</h2>
+
+<h2>
+<a id="number-of-trees-500" class="anchor" href="#number-of-trees-500" aria-hidden="true"><span class="octicon octicon-link"></span></a>Number of trees: 500</h2>
+
+<h2>
+<a id="no-of-variables-tried-at-each-split-17" class="anchor" href="#no-of-variables-tried-at-each-split-17" aria-hidden="true"><span class="octicon octicon-link"></span></a>No. of variables tried at each split: 17</h2>
+
+<h2>
+<a id="oob-estimate-of--error-rate-01" class="anchor" href="#oob-estimate-of--error-rate-01" aria-hidden="true"><span class="octicon octicon-link"></span></a>OOB estimate of  error rate: 0.1%</h2>
+
+<h2>
+<a id="confusion-matrix" class="anchor" href="#confusion-matrix" aria-hidden="true"><span class="octicon octicon-link"></span></a>Confusion matrix:</h2>
+
+<h2>
+<a id="a----b----c----d----e--classerror" class="anchor" href="#a----b----c----d----e--classerror" aria-hidden="true"><span class="octicon octicon-link"></span></a>A    B    C    D    E  class.error</h2>
+
+<h2>
+<a id="a-4183----0----0----2----0-00004778973" class="anchor" href="#a-4183----0----0----2----0-00004778973" aria-hidden="true"><span class="octicon octicon-link"></span></a>A 4183    0    0    2    0 0.0004778973</h2>
+
+<h2>
+<a id="b----0-2847----1----0----0-00003511236" class="anchor" href="#b----0-2847----1----0----0-00003511236" aria-hidden="true"><span class="octicon octicon-link"></span></a>B    0 2847    1    0    0 0.0003511236</h2>
+
+<h2>
+<a id="c----0----2-2564----1----0-00011686794" class="anchor" href="#c----0----2-2564----1----0-00011686794" aria-hidden="true"><span class="octicon octicon-link"></span></a>C    0    2 2564    1    0 0.0011686794</h2>
+
+<h2>
+<a id="d----0----0----5-2406----1-00024875622" class="anchor" href="#d----0----0----5-2406----1-00024875622" aria-hidden="true"><span class="octicon octicon-link"></span></a>D    0    0    5 2406    1 0.0024875622</h2>
+
+<h2>
+<a id="e----0----0----0----2-2704-00007390983" class="anchor" href="#e----0----0----0----2-2704-00007390983" aria-hidden="true"><span class="octicon octicon-link"></span></a>E    0    0    0    2 2704 0.0007390983</h2>
+
+<p>varImport&lt;-varImp(mod_rf)
+varImport</p>
+
+<h2>
+<a id="rf-variable-importance" class="anchor" href="#rf-variable-importance" aria-hidden="true"><span class="octicon octicon-link"></span></a>rf variable importance</h2>
+
+<h2>
+<a id="only-20-most-important-variables-shown-out-of-33" class="anchor" href="#only-20-most-important-variables-shown-out-of-33" aria-hidden="true"><span class="octicon octicon-link"></span></a>only 20 most important variables shown (out of 33)</h2>
+
+<h2>
+<a id="overall" class="anchor" href="#overall" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overall</h2>
+
+<h2>
+<a id="raw_timestamp_part_1-100000" class="anchor" href="#raw_timestamp_part_1-100000" aria-hidden="true"><span class="octicon octicon-link"></span></a>raw_timestamp_part_1 100.000</h2>
+
+<h2>
+<a id="num_window------------55112" class="anchor" href="#num_window------------55112" aria-hidden="true"><span class="octicon octicon-link"></span></a>num_window            55.112</h2>
+
+<h2>
+<a id="roll_belt-------------39468" class="anchor" href="#roll_belt-------------39468" aria-hidden="true"><span class="octicon octicon-link"></span></a>roll_belt             39.468</h2>
+
+<h2>
+<a id="yaw_belt--------------26755" class="anchor" href="#yaw_belt--------------26755" aria-hidden="true"><span class="octicon octicon-link"></span></a>yaw_belt              26.755</h2>
+
+<h2>
+<a id="pitch_belt------------19403" class="anchor" href="#pitch_belt------------19403" aria-hidden="true"><span class="octicon octicon-link"></span></a>pitch_belt            19.403</h2>
+
+<h2>
+<a id="roll_dumbbell---------16172" class="anchor" href="#roll_dumbbell---------16172" aria-hidden="true"><span class="octicon octicon-link"></span></a>roll_dumbbell         16.172</h2>
+
+<h2>
+<a id="magnet_arm_x-----------9242" class="anchor" href="#magnet_arm_x-----------9242" aria-hidden="true"><span class="octicon octicon-link"></span></a>magnet_arm_x           9.242</h2>
+
+<h2>
+<a id="yaw_dumbbell-----------8619" class="anchor" href="#yaw_dumbbell-----------8619" aria-hidden="true"><span class="octicon octicon-link"></span></a>yaw_dumbbell           8.619</h2>
+
+<h2>
+<a id="magnet_belt_z----------8163" class="anchor" href="#magnet_belt_z----------8163" aria-hidden="true"><span class="octicon octicon-link"></span></a>magnet_belt_z          8.163</h2>
+
+<h2>
+<a id="roll_arm---------------8109" class="anchor" href="#roll_arm---------------8109" aria-hidden="true"><span class="octicon octicon-link"></span></a>roll_arm               8.109</h2>
+
+<h2>
+<a id="accel_belt_z-----------7991" class="anchor" href="#accel_belt_z-----------7991" aria-hidden="true"><span class="octicon octicon-link"></span></a>accel_belt_z           7.991</h2>
+
+<h2>
+<a id="accel_arm_x------------6972" class="anchor" href="#accel_arm_x------------6972" aria-hidden="true"><span class="octicon octicon-link"></span></a>accel_arm_x            6.972</h2>
+
+<h2>
+<a id="magnet_belt_y----------6682" class="anchor" href="#magnet_belt_y----------6682" aria-hidden="true"><span class="octicon octicon-link"></span></a>magnet_belt_y          6.682</h2>
+
+<h2>
+<a id="yaw_arm----------------4237" class="anchor" href="#yaw_arm----------------4237" aria-hidden="true"><span class="octicon octicon-link"></span></a>yaw_arm                4.237</h2>
+
+<h2>
+<a id="accel_arm_z------------4132" class="anchor" href="#accel_arm_z------------4132" aria-hidden="true"><span class="octicon octicon-link"></span></a>accel_arm_z            4.132</h2>
+
+<h2>
+<a id="pitch_arm--------------4097" class="anchor" href="#pitch_arm--------------4097" aria-hidden="true"><span class="octicon octicon-link"></span></a>pitch_arm              4.097</h2>
+
+<h2>
+<a id="magnet_belt_x----------3690" class="anchor" href="#magnet_belt_x----------3690" aria-hidden="true"><span class="octicon octicon-link"></span></a>magnet_belt_x          3.690</h2>
+
+<h2>
+<a id="pitch_dumbbell---------3203" class="anchor" href="#pitch_dumbbell---------3203" aria-hidden="true"><span class="octicon octicon-link"></span></a>pitch_dumbbell         3.203</h2>
+
+<h2>
+<a id="accel_arm_y------------2992" class="anchor" href="#accel_arm_y------------2992" aria-hidden="true"><span class="octicon octicon-link"></span></a>accel_arm_y            2.992</h2>
+
+<h2>
+<a id="total_accel_belt-------2656" class="anchor" href="#total_accel_belt-------2656" aria-hidden="true"><span class="octicon octicon-link"></span></a>total_accel_belt       2.656</h2>
+
+<p>Next, I use the test subset to validate the model. I build the Confusion Matrix and we can see that the accuracy is very high, 0,998.</p>
+
+<p>preds&lt;-predict(mod_rf,newdata=test)
+confusionMatrix(preds,test$classe)</p>
+
+<h2>
+<a id="confusion-matrix-and-statistics" class="anchor" href="#confusion-matrix-and-statistics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Confusion Matrix and Statistics</h2>
+
+<h2>
+<a id="reference" class="anchor" href="#reference" aria-hidden="true"><span class="octicon octicon-link"></span></a>Reference</h2>
+
+<h2>
+<a id="prediction----a----b----c----d----e" class="anchor" href="#prediction----a----b----c----d----e" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prediction    A    B    C    D    E</h2>
+
+<h2>
+<a id="a-1394----1----0----0----0" class="anchor" href="#a-1394----1----0----0----0" aria-hidden="true"><span class="octicon octicon-link"></span></a>A 1394    1    0    0    0</h2>
+
+<h2>
+<a id="b----0--948----2----0----0" class="anchor" href="#b----0--948----2----0----0" aria-hidden="true"><span class="octicon octicon-link"></span></a>B    0  948    2    0    0</h2>
+
+<h2>
+<a id="c----0----0--853----2----0" class="anchor" href="#c----0----0--853----2----0" aria-hidden="true"><span class="octicon octicon-link"></span></a>C    0    0  853    2    0</h2>
+
+<h2>
+<a id="d----1----0----0--802----1" class="anchor" href="#d----1----0----0--802----1" aria-hidden="true"><span class="octicon octicon-link"></span></a>D    1    0    0  802    1</h2>
+
+<h2>
+<a id="e----0----0----0----0--900" class="anchor" href="#e----0----0----0----0--900" aria-hidden="true"><span class="octicon octicon-link"></span></a>E    0    0    0    0  900</h2>
+
+<h2>
+<a id="overall-statistics" class="anchor" href="#overall-statistics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overall Statistics</h2>
+
+<h2>
+<a id="accuracy--09986" class="anchor" href="#accuracy--09986" aria-hidden="true"><span class="octicon octicon-link"></span></a>Accuracy : 0.9986</h2>
+
+<h2>
+<a id="95-ci--09971-09994" class="anchor" href="#95-ci--09971-09994" aria-hidden="true"><span class="octicon octicon-link"></span></a>95% CI : (0.9971, 0.9994)</h2>
+
+<h2>
+<a id="no-information-rate--02845" class="anchor" href="#no-information-rate--02845" aria-hidden="true"><span class="octicon octicon-link"></span></a>No Information Rate : 0.2845</h2>
+
+<h2>
+<a id="p-value-acc--nir---22e-16" class="anchor" href="#p-value-acc--nir---22e-16" aria-hidden="true"><span class="octicon octicon-link"></span></a>P-Value [Acc &gt; NIR] : &lt; 2.2e-16</h2>
+
+<h2>
+<a id="kappa--09982" class="anchor" href="#kappa--09982" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kappa : 0.9982</h2>
+
+<h2>
+<a id="mcnemars-test-p-value--na" class="anchor" href="#mcnemars-test-p-value--na" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mcnemar's Test P-Value : NA</h2>
+
+<h2>
+<a id="statistics-by-class" class="anchor" href="#statistics-by-class" aria-hidden="true"><span class="octicon octicon-link"></span></a>Statistics by Class:</h2>
+
+<h2>
+<a id="class-a-class-b-class-c-class-d-class-e" class="anchor" href="#class-a-class-b-class-c-class-d-class-e" aria-hidden="true"><span class="octicon octicon-link"></span></a>Class: A Class: B Class: C Class: D Class: E</h2>
+
+<h2>
+<a id="sensitivity------------09993---09989---09977---09975---09989" class="anchor" href="#sensitivity------------09993---09989---09977---09975---09989" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sensitivity            0.9993   0.9989   0.9977   0.9975   0.9989</h2>
+
+<h2>
+<a id="specificity------------09997---09995---09995---09995---10000" class="anchor" href="#specificity------------09997---09995---09995---09995---10000" aria-hidden="true"><span class="octicon octicon-link"></span></a>Specificity            0.9997   0.9995   0.9995   0.9995   1.0000</h2>
+
+<h2>
+<a id="pos-pred-value---------09993---09979---09977---09975---10000" class="anchor" href="#pos-pred-value---------09993---09979---09977---09975---10000" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pos Pred Value         0.9993   0.9979   0.9977   0.9975   1.0000</h2>
+
+<h2>
+<a id="neg-pred-value---------09997---09997---09995---09995---09998" class="anchor" href="#neg-pred-value---------09997---09997---09995---09995---09998" aria-hidden="true"><span class="octicon octicon-link"></span></a>Neg Pred Value         0.9997   0.9997   0.9995   0.9995   0.9998</h2>
+
+<h2>
+<a id="prevalence-------------02845---01935---01743---01639---01837" class="anchor" href="#prevalence-------------02845---01935---01743---01639---01837" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prevalence             0.2845   0.1935   0.1743   0.1639   0.1837</h2>
+
+<h2>
+<a id="detection-rate---------02843---01933---01739---01635---01835" class="anchor" href="#detection-rate---------02843---01933---01739---01635---01835" aria-hidden="true"><span class="octicon octicon-link"></span></a>Detection Rate         0.2843   0.1933   0.1739   0.1635   0.1835</h2>
+
+<h2>
+<a id="detection-prevalence---02845---01937---01743---01639---01835" class="anchor" href="#detection-prevalence---02845---01937---01743---01639---01835" aria-hidden="true"><span class="octicon octicon-link"></span></a>Detection Prevalence   0.2845   0.1937   0.1743   0.1639   0.1835</h2>
+
+<h2>
+<a id="balanced-accuracy------09995---09992---09986---09985---09994" class="anchor" href="#balanced-accuracy------09995---09992---09986---09985---09994" aria-hidden="true"><span class="octicon octicon-link"></span></a>Balanced Accuracy      0.9995   0.9992   0.9986   0.9985   0.9994</h2>
+
+<p>Finally, I use the model to predict the values of the variable “Classe” of a new set of data named “pml-testing”. The 20 predictions are shown below:</p>
+
+<p>testing&lt;-read.csv("C:/Users/Antonio/Documents/R/pml-testing.csv",header=TRUE)
+testing_preds&lt;-predict(mod_rf,newdata=testing)
+testing_preds</p>
+
+<h2>
+<a id="1-b-a-b-a-a-e-d-b-a-a-b-c-b-a-e-e-a-b-b-b" class="anchor" href="#1-b-a-b-a-a-e-d-b-a-a-b-c-b-a-e-e-a-b-b-b" aria-hidden="true"><span class="octicon octicon-link"></span></a>[1] B A B A A E D B A A B C B A E E A B B B</h2>
+
+<h2>
+<a id="levels-a-b-c-d-e" class="anchor" href="#levels-a-b-c-d-e" aria-hidden="true"><span class="octicon octicon-link"></span></a>Levels: A B C D E</h2>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/onnatio/Course-Project">Course Project for Practical Machine Learning</a> is maintained by <a href="https://github.com/onnatio">onnatio</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
